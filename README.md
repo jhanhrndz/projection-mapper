@@ -1,6 +1,6 @@
 # Projection Mapper Studio
 
-Software profesional de **Video Mapping (Mapeo de Proyección)** con arquitectura de doble ventana, deformación geométrica en tiempo real (GPU), soporte para polígonos rectos y curvas Bézier, gestión de paquetes autónomos `.pmap` y motor de exportación de video acelerado por hardware.
+Projection Mapper Studio es un software profesional de **Video Mapping (Mapeo de Proyección)** diseñado para transformar objetos físicos, fachadas, estructuras y esculturas mediante proyección de video e imágenes. Cuenta con una arquitectura de doble ventana a 0 ms de latencia, manipulación geométrica con curvas Bézier de precisión milimétrica (subdivisión De Casteljau), máscaras de oclusión, paquetes de proyecto portables (.pmap) y motor de renderizado de video acelerado por hardware (GPU). Creado para operar 100% offline y listo para uso en shows en vivo.
 
 ---
 
