@@ -2,8 +2,6 @@
 
 Software profesional de **Video Mapping (Mapeo de Proyección)** con arquitectura de doble ventana, deformación geométrica en tiempo real (GPU), soporte para polígonos rectos y curvas Bézier, gestión de paquetes autónomos `.pmap` y motor de exportación de video acelerado por hardware.
 
-Desarrollado con pasión por **Jhan By AudacIA**.
-
 ---
 
 ## 📑 Documentación Adicional
