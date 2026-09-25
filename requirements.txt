@@ -1,0 +1,10 @@
+# ========================================================
+# Projection Mapper - Dependencias de Python
+# Para instalar manualmente: pip install -r requirements.txt
+# ========================================================
+
+# Procesamiento de imágenes, homografía, deformación de perspectiva y matrices
+opencv-python>=4.8.0
+
+# Operaciones matemáticas vectoriales y manipulación de matrices de píxeles
+numpy>=1.24.0

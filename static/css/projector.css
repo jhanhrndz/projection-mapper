@@ -1,0 +1,177 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100vw;
+  height: 100vh;
+  background-color: #000000;
+  overflow: hidden;
+  user-select: none;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/* En modo presentación, el cursor desaparece por completo */
+body.presentation-mode {
+  cursor: none !important;
+}
+
+#projector-container {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  background-color: #000000;
+}
+
+#projector-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Píldora de estado de calibración sutil */
+.status-pill {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  background: rgba(15, 20, 30, 0.85);
+  color: #00f0ff;
+  font-size: 11px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  backdrop-filter: blur(6px);
+}
+
+/* Contenedor de proyección deformada acelerada por GPU (resolución nativa 1920x1080) */
+.projector-media-viewport {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1920px;
+  height: 1080px;
+  pointer-events: none;
+  overflow: visible;
+  z-index: 1;
+  transform-origin: 0 0;
+}
+
+#projector-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: block;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.warped-media-quad {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1000px;
+  height: 1000px;
+  transform-origin: 0 0;
+  pointer-events: none;
+  overflow: hidden;
+  backface-visibility: hidden;
+  will-change: transform;
+}
+
+.warped-media-quad img,
+.warped-media-quad video {
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  display: block;
+}
+
+/* Pantalla de Pausa de Recursos durante Exportación */
+.export-pause-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(5, 8, 14, 0.94);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999999;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  pointer-events: auto;
+}
+
+.export-pause-overlay.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.export-pause-card {
+  background: #0f1523;
+  border: 1px solid rgba(0, 240, 255, 0.35);
+  box-shadow: 0 0 35px rgba(0, 240, 255, 0.2), inset 0 0 15px rgba(0, 240, 255, 0.05);
+  border-radius: 12px;
+  padding: 36px 44px;
+  max-width: 640px;
+  width: 90%;
+  text-align: center;
+  animation: pulse-pause-card 3s infinite alternate ease-in-out;
+}
+
+@keyframes pulse-pause-card {
+  0% { box-shadow: 0 0 25px rgba(0, 240, 255, 0.15); }
+  100% { box-shadow: 0 0 45px rgba(0, 240, 255, 0.35); }
+}
+
+.export-pause-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.export-pause-title {
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  letter-spacing: 0.5px;
+}
+
+.export-pause-subtitle {
+  color: #94a3b8;
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.export-pause-bar-track {
+  width: 100%;
+  height: 10px;
+  background-color: #1a2233;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.export-pause-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00f0ff, #00ff88);
+  border-radius: 5px;
+  transition: width 0.3s ease;
+  box-shadow: 0 0 10px rgba(0, 255, 136, 0.6);
+}
+
+.export-pause-pct-txt {
+  font-size: 12px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color: #00f0ff;
+  font-weight: 600;
+}

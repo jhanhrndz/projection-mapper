@@ -1,0 +1,47 @@
+{
+  "name": "ejemplo",
+  "aspectRatio": "16:9",
+  "displayMode": "calibration",
+  "polygons": [
+    {
+      "id": "poly_1789593322013_6w6rn",
+      "name": "pared",
+      "type": "polygon",
+      "points": [
+        [
+          0.6045914014180501,
+          0.19624352914315674
+        ],
+        [
+          0.7258349579478716,
+          0.5695768624764901
+        ],
+        [
+          0.4833478448882287,
+          0.5695768624764901
+        ]
+      ],
+      "center": [
+        0.5,
+        0.5
+      ],
+      "radiusX": 0.18,
+      "radiusY": 0.18,
+      "rotation": 0,
+      "edgeCurves": {},
+      "visible": true,
+      "locked": false,
+      "color": "#ffaa00",
+      "media": {
+        "type": "video",
+        "src": "/media/videos/video3.mp4",
+        "opacity": 1,
+        "fit": "stretch",
+        "loop": true,
+        "playing": true,
+        "playbackRate": 1,
+        "muted": true
+      }
+    }
+  ]
+}

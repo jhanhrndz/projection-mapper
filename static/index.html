@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Projection Mapper · Ventana de Control</title>
+  <link rel="stylesheet" href="/static/css/control.css?v=2.8.3">
+</head>
+<body>
+
+  <!-- Barra Superior -->
+  <header class="top-header">
+    <div class="brand-section">
+      <span class="logo-badge" title="Projection Mapper">PM</span>
+      <span class="app-title" title="Projection Mapper">Projection Mapper</span>
+      <div class="scene-title-badge" title="Clic para renombrar la escena activa">
+        <span class="scene-label">Escena:</span>
+        <input type="text" id="top-scene-name-input" class="scene-name-input" value="Mi_Escena_1" spellcheck="false" autocomplete="off" />
+      </div>
+    </div>
+
+    <div class="quick-actions">
+      <button id="btn-undo" class="tool-btn" title="Deshacer (Ctrl+Z)">
+        <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+        Deshacer
+      </button>
+      <button id="btn-redo" class="tool-btn" title="Rehacer (Ctrl+Y)">
+        <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+        Rehacer
+      </button>
+      <div class="tool-separator"></div>
+      <button id="btn-toggle-mode" class="tool-btn" title="Alternar modo de salida en el proyector (Espacio / M)">
+        <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/></svg>
+        <span>Modo: Calibración</span>
+      </button>
+      <div class="tool-separator"></div>
+      <button id="btn-save-scene" class="tool-btn" title="Guardar escena actual (Ctrl+S)">
+        <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Guardar
+      </button>
+      <div class="tool-separator"></div>
+      <button id="btn-export-video" class="tool-btn highlight-btn" title="Exportar diseño como video pre-mapeado (.mp4)">
+        <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/></svg>
+        Exportar Video
+      </button>
+      <button id="btn-open-projector" class="tool-btn accent-btn" title="Abrir ventana para enviar al proyector">
+        <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2Z"/><circle cx="9" cy="12" r="2.5"/><path d="M16 12h2"/><line x1="7" y1="17" x2="6" y2="20"/><line x1="17" y1="17" x2="18" y2="20"/></svg>
+        Abrir Proyector
+      </button>
+      <div class="tool-separator"></div>
+
+      <!-- Menú de Opciones y Ajustes (3 Puntos ⋮) -->
+      <div class="dropdown-menu-container">
+        <button id="btn-menu-more" class="tool-btn icon-more-btn" title="Más opciones y ajustes" style="padding: 6px 9px;">
+          <svg class="svg-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+        </button>
+        <div id="menu-more" class="dropdown-menu hidden" style="min-width: 250px; right: 0; left: auto;">
+          <button id="btn-menu-load-scene" class="dropdown-item" title="Ver y cargar escenas guardadas">
+            <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="m6 14 1.45-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.55 6a2 2 0 0 1-1.94 1.5H4a2 2 0 0 1-2-2V5c0-1.1.9-2 2-2h3.93a2 2 0 0 1 1.66.9l.82 1.2a2 2 0 0 0 1.66.9H18a2 2 0 0 1 2 2v2"/></svg>
+            Gestor de Escenas...
+          </button>
+          <button id="btn-menu-import-project" class="dropdown-item" title="Importar proyecto (.pmap) o escena (.json) desde tu equipo">
+            <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Importar Proyecto (.pmap / .json)...
+          </button>
+          <div class="dropdown-divider"></div>
+          <button id="btn-menu-export-pmap" class="dropdown-item" title="Empaquetar geometrías y videos/imágenes en paquete .pmap para llevar en USB">
+            <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+            Exportar Paquete (.pmap)
+          </button>
+          <button id="btn-menu-export-json" class="dropdown-item" title="Descargar solo archivo JSON con coordenadas y geometrías">
+            <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><polyline points="10 13 8 15 10 17"/><polyline points="14 13 16 15 14 17"/></svg>
+            Exportar Escena (.json)
+          </button>
+          <div class="dropdown-divider"></div>
+          <button id="btn-menu-exports-gallery" class="dropdown-item" title="Ver y descargar los videos renderizados en media/exports/">
+            <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/></svg>
+            Videos Renderizados...
+          </button>
+          <button id="btn-menu-help" class="dropdown-item" title="Guía de uso y atajos de teclado (F1)">
+            <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            Ayuda y Atajos...
+          </button>
+          <div class="dropdown-divider"></div>
+          <button id="btn-menu-shutdown" class="dropdown-item danger-item" title="Detener el servidor y salir del programa">
+            <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
+            Salir / Detener Programa
+          </button>
+        </div>
+      </div>
+      <input type="file" id="input-import-project" accept=".pmap,.json" style="display: none;" />
+    </div>
+  </header>
+
+  <!-- Cuerpo Principal -->
+  <div class="app-layout">
+    
+    <!-- Barra Lateral Izquierda: Capas / Superficies -->
+    <aside class="sidebar">
+      <div class="panel-header">
+        <span>Superficies Mapeadas</span>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button id="btn-lock-all" class="icon-btn" title="Bloquear / Desbloquear todas las superficies" style="cursor: pointer; padding: 3px 6px; background: transparent; border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-main); display: flex; align-items: center;">
+            <svg class="svg-icon icon-sm" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+          </button>
+          <span id="layer-count" style="font-size: 10px; color: var(--accent-cyan);">Capas</span>
+        </div>
+      </div>
+      <div class="panel-content">
+        <div id="layers-list" class="layers-list">
+          <!-- Renderizado dinámico desde ui_controller.js -->
+        </div>
+      </div>
+    </aside>
+
+    <!-- Área Central de Trabajo y Lienzo -->
+    <main class="editor-workspace">
+      <!-- Cinta de herramientas de dibujo -->
+      <div class="toolbar-ribbon">
+        <button id="btn-tool-select" class="tool-btn active" title="Modo Selección y Edición de Vértices (V)">
+          <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/><path d="m13 13 6 6"/></svg>
+          Selección & Vértices
+        </button>
+        <button id="btn-tool-draw-straight" class="tool-btn" title="Dibujar Polígono con líneas y esquinas rectas (Atajo: P)">
+          <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19 7-7 3 3-7 7-3-3z"/><path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><circle cx="11" cy="11" r="2"/></svg>
+          Polígono Recto
+        </button>
+        <button id="btn-tool-draw-curved" class="tool-btn" title="Dibujar Polígono con bordes curvos y arcos Bézier (Atajo: C)">
+          <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="19" r="2.5"/><circle cx="19" cy="5" r="2.5"/><path d="M5 16.5c0-6 4-11 11.5-11.5"/></svg>
+          Polígono Curvo
+        </button>
+        <!-- Menú Desplegable: Añadir Superficie -->
+        <div class="dropdown-menu-container">
+          <button id="btn-dropdown-surfaces" class="tool-btn dropdown-toggle" title="Crear nueva superficie de proyección">
+            <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Añadir Superficie
+            <svg class="svg-icon icon-sm dropdown-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div id="menu-surfaces" class="dropdown-menu hidden">
+            <button id="btn-add-quad" class="dropdown-item">
+              <svg class="svg-icon icon-md" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85"><polygon points="4 6 20 4 18 20 6 18"/></svg>
+              Cuadrilátero Libre (Quad)
+            </button>
+            <button id="btn-add-square" class="dropdown-item">
+              <svg class="svg-icon icon-md" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85"><rect width="18" height="18" x="3" y="3" rx="2"/></svg>
+              Cuadrado Proporcional (1:1)
+            </button>
+            <button id="btn-add-circle" class="dropdown-item">
+              <svg class="svg-icon icon-md" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85"><circle cx="12" cy="12" r="9"/></svg>
+              Círculo / Elipse
+            </button>
+            <button id="btn-add-triangle" class="dropdown-item">
+              <svg class="svg-icon icon-md" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85"><polygon points="12 3 22 21 2 21"/></svg>
+              Triángulo (3 Puntos)
+            </button>
+            <button id="btn-add-pentagon" class="dropdown-item">
+              <svg class="svg-icon icon-md" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85"><polygon points="12 2 22 8.5 18 21 6 21 2 8.5"/></svg>
+              Pentágono (5 Puntos)
+            </button>
+            <button id="btn-add-hexagon" class="dropdown-item">
+              <svg class="svg-icon icon-md" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85"><polygon points="12 2 21 7 21 17 12 22 3 17 3 7"/></svg>
+              Hexágono (6 Puntos)
+            </button>
+          </div>
+        </div>
+
+        <!-- Menú Desplegable: Añadir Máscara -->
+        <div class="dropdown-menu-container">
+          <button id="btn-dropdown-masks" class="tool-btn dropdown-toggle" title="Crear máscara de oclusión negra">
+            <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Añadir Máscara
+            <svg class="svg-icon icon-sm dropdown-caret" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div id="menu-masks" class="dropdown-menu hidden">
+            <button id="btn-add-occluder" class="dropdown-item">
+              <svg class="svg-icon icon-md" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85"><polygon points="4 6 20 4 18 20 6 18"/></svg>
+              Máscara Cuad Libre
+            </button>
+            <button id="btn-add-mask-square" class="dropdown-item">
+              <svg class="svg-icon icon-md" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85"><rect width="18" height="18" x="3" y="3" rx="2"/></svg>
+              Máscara Cuadrada (1:1)
+            </button>
+            <button id="btn-add-circle-occluder" class="dropdown-item">
+              <svg class="svg-icon icon-md" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85"><circle cx="12" cy="12" r="9"/></svg>
+              Máscara Circular
+            </button>
+            <button id="btn-add-mask-triangle" class="dropdown-item">
+              <svg class="svg-icon icon-md" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85"><polygon points="12 3 22 21 2 21"/></svg>
+              Máscara Triangular
+            </button>
+          </div>
+        </div>
+
+        <div class="tool-separator"></div>
+        <span id="toolbar-context-hint" style="font-size: 11px; color: var(--text-muted); margin-left: 8px;">
+          Arrastra figuras o vértices · Shift+Clic / Recuadro selec. múltiple · Supr para borrar
+        </span>
+      </div>
+
+      <!-- Lienzo donde se renderiza el proyector 16:9 -->
+      <div class="canvas-container" id="canvas-container">
+        <!-- Generado por editor_canvas.js -->
+      </div>
+
+      <!-- Barra de estado inferior -->
+      <footer class="status-bar">
+        <div>
+          <span class="status-dot"></span>
+          <span id="sync-indicator">Sincronización en tiempo real activa (0 ms)</span>
+        </div>
+        <div>
+          <span>Resolución Base: 1920x1080 (16:9) · Espacio: Alternar Modo con Proyector</span>
+        </div>
+      </footer>
+    </main>
+
+    <!-- Barra Lateral Derecha: Inspector de Propiedades -->
+    <aside class="sidebar sidebar-right">
+      <div class="panel-header">
+        <span>Propiedades de Superficie</span>
+      </div>
+      <div class="panel-content">
+        <div id="properties-panel">
+          <!-- Renderizado dinámico desde ui_controller.js -->
+        </div>
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- Scripts de la Aplicación -->
+  <script src="/static/js/icons.js?v=2.8.4"></script>
+  <script src="/static/js/sync.js?v=2.8.4"></script>
+  <script src="/static/js/math_warp.js?v=2.8.4"></script>
+  <script src="/static/js/polygon_model.js?v=2.8.4"></script>
+  <script src="/static/js/editor_canvas.js?v=2.8.4"></script>
+  <script src="/static/js/ui_controller.js?v=2.8.4"></script>
+  <script src="/static/js/scene_manager.js?v=2.8.4"></script>
+  <script src="/static/js/export_modal.js?v=2.8.4"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const sync = new MappingSync('control');
+      const scene = new SceneModel('Mi_Escena_1');
+      
+      // Restaurar sesión previa guardada automáticamente si existe
+      const restored = scene.restoreFromAutosave();
+      if (restored) {
+        console.log('[ProjectionMapper] Sesión previa recuperada automáticamente con', scene.polygons.length, 'superficies.');
+      }
+
+      const canvasContainer = document.getElementById('canvas-container');
+      const editorCanvas = new EditorCanvas(canvasContainer, scene, sync);
+      const uiController = new UIController(scene, editorCanvas, sync);
+      const sceneManager = new SceneManager(scene, uiController, sync);
+      const exportModal = new ExportModal(scene, sync);
+
+      document.getElementById('btn-export-video').addEventListener('click', () => {
+        exportModal.open();
+      });
+
+      // Sincronizar estado inicial
+      sync.broadcastFullState(scene.toJSON());
+
+      console.log('[ProjectionMapper] Control Window, SceneManager y ExportModal inicializados.');
+    });
+  </script>
+  <!-- Modal de Ayuda y Atajos de Teclado -->
+  <div id="modal-help" class="modal-overlay hidden">
+    <div class="modal-card" style="max-width: 680px; max-height: 90vh;">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="modal-icon" style="display: flex; align-items: center; color: var(--accent-cyan);">
+            <svg class="svg-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </span>
+          <div>
+            <h3 style="margin:0; font-size: 16px; color: var(--text-main);">Guía y Atajos de Teclado</h3>
+            <p style="margin: 3px 0 0 0; font-size: 11px; color: var(--text-muted);">Projection Mapper · Software Profesional de Video Mapping</p>
+          </div>
+        </div>
+        <button id="btn-close-help" class="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body" style="overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 18px;">
+        
+        <!-- Sección 1: Atajos de Teclado -->
+        <div>
+          <h4 style="margin: 0 0 10px 0; color: var(--accent-cyan); font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px;">
+            <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="6" y1="8" x2="6.01" y2="8"/><line x1="10" y1="8" x2="10.01" y2="8"/><line x1="14" y1="8" x2="14.01" y2="8"/><line x1="18" y1="8" x2="18.01" y2="8"/><line x1="6" y1="12" x2="6.01" y2="12"/><line x1="10" y1="12" x2="10.01" y2="12"/><line x1="14" y1="12" x2="14.01" y2="12"/><line x1="18" y1="12" x2="18.01" y2="12"/><line x1="7" y1="16" x2="17" y2="16"/></svg>
+            Atajos de Teclado
+          </h4>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12px;">
+            <div class="shortcut-item" style="background: rgba(255,255,255,0.04); padding: 7px 10px; border-radius: 5px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+              <span>Modo Selección & Vértices</span> <kbd style="background: #1e293b; padding: 2px 7px; border-radius: 4px; border: 1px solid #475569; font-weight: bold; color: #38bdf8;">V</kbd>
+            </div>
+            <div class="shortcut-item" style="background: rgba(255,255,255,0.04); padding: 7px 10px; border-radius: 5px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+              <span>Dibujar Polígono Recto</span> <kbd style="background: #1e293b; padding: 2px 7px; border-radius: 4px; border: 1px solid #475569; font-weight: bold; color: #38bdf8;">P</kbd>
+            </div>
+            <div class="shortcut-item" style="background: rgba(255,255,255,0.04); padding: 7px 10px; border-radius: 5px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+              <span>Dibujar Polígono Curvo</span> <kbd style="background: #1e293b; padding: 2px 7px; border-radius: 4px; border: 1px solid #475569; font-weight: bold; color: #f472b6;">C</kbd>
+            </div>
+            <div class="shortcut-item" style="background: rgba(255,255,255,0.04); padding: 7px 10px; border-radius: 5px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+              <span>Calibración / Presentación</span> <kbd style="background: #1e293b; padding: 2px 7px; border-radius: 4px; border: 1px solid #475569; font-weight: bold; color: #4ade80;">Espacio / M</kbd>
+            </div>
+            <div class="shortcut-item" style="background: rgba(255,255,255,0.04); padding: 7px 10px; border-radius: 5px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+              <span>Cerrar Polígono en Curso</span> <kbd style="background: #1e293b; padding: 2px 7px; border-radius: 4px; border: 1px solid #475569; font-weight: bold; color: #00ff88;">Enter</kbd>
+            </div>
+            <div class="shortcut-item" style="background: rgba(255,255,255,0.04); padding: 7px 10px; border-radius: 5px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+              <span>Cancelar Dibujo / Deseleccionar</span> <kbd style="background: #1e293b; padding: 2px 7px; border-radius: 4px; border: 1px solid #475569; font-weight: bold; color: #94a3b8;">Esc</kbd>
+            </div>
+            <div class="shortcut-item" style="background: rgba(255,255,255,0.04); padding: 7px 10px; border-radius: 5px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+              <span>Eliminar Vértice(s) o Figura</span> <kbd style="background: #1e293b; padding: 2px 7px; border-radius: 4px; border: 1px solid #475569; font-weight: bold; color: #f87171;">Supr / Del</kbd>
+            </div>
+            <div class="shortcut-item" style="background: rgba(255,255,255,0.04); padding: 7px 10px; border-radius: 5px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+              <span>Selección Múltiple</span> <kbd style="background: #1e293b; padding: 2px 7px; border-radius: 4px; border: 1px solid #475569; font-weight: bold; color: #fbbf24;">Shift + Clic</kbd>
+            </div>
+            <div class="shortcut-item" style="background: rgba(255,255,255,0.04); padding: 7px 10px; border-radius: 5px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+              <span>Añadir Vértice a Arista</span> <kbd style="background: #1e293b; padding: 2px 7px; border-radius: 4px; border: 1px solid #475569; font-weight: bold; color: #38bdf8;">Clic en (+)</kbd>
+            </div>
+            <div class="shortcut-item" style="background: rgba(255,255,255,0.04); padding: 7px 10px; border-radius: 5px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+              <span>Alternar Curva / Recta</span> <kbd style="background: #1e293b; padding: 2px 7px; border-radius: 4px; border: 1px solid #475569; font-weight: bold; color: #f472b6;">Alt + Clic en (+)</kbd>
+            </div>
+            <div class="shortcut-item" style="background: rgba(255,255,255,0.04); padding: 7px 10px; border-radius: 5px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+              <span>Micro-ajuste Óptico de Vértices</span> <kbd style="background: #1e293b; padding: 2px 7px; border-radius: 4px; border: 1px solid #475569; font-weight: bold; color: #e2e8f0;">Flechas (1px / 10px)</kbd>
+            </div>
+            <div class="shortcut-item" style="background: rgba(255,255,255,0.04); padding: 7px 10px; border-radius: 5px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+              <span>Deshacer y Rehacer</span> <kbd style="background: #1e293b; padding: 2px 7px; border-radius: 4px; border: 1px solid #475569; font-weight: bold; color: #cbd5e1;">Ctrl+Z / Ctrl+Y</kbd>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sección 2: Flujo de Trabajo Básico -->
+        <div>
+          <h4 style="margin: 0 0 10px 0; color: var(--accent-cyan); font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px;">
+            <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>
+            Guía de Uso Rápido
+          </h4>
+          <ol style="margin: 0; padding-left: 20px; font-size: 12.5px; color: var(--text-main); line-height: 1.6; display: flex; flex-direction: column; gap: 8px;">
+            <li><b>Abrir Proyector:</b> Haz clic en <i>"Abrir Proyector"</i> y arrastra esa ventana a la pantalla conectada a tu proyector. Pulsa <b>F11</b> en esa ventana para enviarla a pantalla completa con fondo negro.</li>
+            <li><b>Crear Superficies:</b> Usa <i>"Añadir Superficie"</i> para figuras estándar o <i>"Polígono Recto"</i> / <i>"Polígono Curvo"</i> para mapear libremente sobre cualquier estructura física.</li>
+            <li><b>Ajustar Vértices y Curvas:</b> Arrastra los vértices en el lienzo de control hasta calzar perfectamente con los bordes reales. Usa <b>Alt+Clic</b> en el punto medio (+) para arquear o enderezar bordes individuales, y mueve las manijas púrpuras para un calce curvo orgánico milimétrico. Si eliminas un vértice, las curvas se fusionan automáticamente sin perder forma.</li>
+            <li><b>Asignar Medios:</b> Selecciona una superficie y en el panel derecho elige imagen, video o color. También puedes <b>arrastrar y soltar</b> archivos de imagen/video (.mp4, .png, etc.) desde tu explorador de Windows directamente sobre cualquier figura.</li>
+            <li><b>Presentar o Exportar:</b> Pulsa <b>Espacio</b> (o el botón de Modo) para alternar al modo presentación sin líneas guía. También puedes pulsar <i>"Exportar Video"</i> para renderizar tu diseño en un archivo .mp4 mapeado listo para reproducir.</li>
+          </ol>
+        </div>
+
+        <!-- Sección 3: Compartir y Trabajar en Múltiples Equipos (.pmap) -->
+        <div>
+          <h4 style="margin: 0 0 10px 0; color: #a855f7; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px;">
+            <svg class="svg-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85"><path d="m16.5 9.4-9-5.19M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.29 7 12 12 20.71 7"/><line x1="12" y1="22" x2="12" y2="12"/></svg>
+            Compartir y Trabajar en Múltiples Equipos (.pmap)
+          </h4>
+          <div style="background: rgba(168, 85, 247, 0.08); border: 1px solid rgba(168, 85, 247, 0.25); border-radius: 6px; padding: 12px 14px; font-size: 12.5px; color: var(--text-main); line-height: 1.6; display: flex; flex-direction: column; gap: 8px;">
+            <p style="margin:0;">
+              <b>¿Qué es un archivo .pmap?</b> Es un paquete de proyecto autónomo que empaqueta en un único archivo todas tus figuras, calibraciones, cuadriláteros, curvas y los <b>archivos reales de video e imagen</b> asignados a cada superficie. Esto evita que los enlaces a videos o imágenes se rompan al cambiar de computadora.
+            </p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 4px;">
+              <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; border: 1px solid rgba(255,255,255,0.06);">
+                <b style="color: #38bdf8; display: block; margin-bottom: 4px;">1. En la PC de Diseño:</b>
+                <span>Haz clic en <b>Exportar ▾</b> y selecciona <b>"Paquete Completo (.pmap)"</b>. Guarda el archivo resultante en tu memoria USB o disco externo.</span>
+              </div>
+              <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; border: 1px solid rgba(255,255,255,0.06);">
+                <b style="color: #4ade80; display: block; margin-bottom: 4px;">2. En la PC del Proyector:</b>
+                <span>Haz clic en <b>Importar</b> y selecciona el archivo <b>.pmap</b>. El sistema extraerá los medios automáticamente y cargará tu escena lista para proyectar.</span>
+              </div>
+            </div>
+            <div style="margin-top: 4px; font-size: 11.5px; color: var(--text-muted); display: flex; align-items: center; gap: 4px;">
+              <span style="color: var(--accent-cyan); display: flex;">
+                <svg class="svg-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              </span>
+              <span><b>Tip:</b> Si solo necesitas respaldar las figuras o ajustes geométricos sin los archivos de video pesados, utiliza <b>"Solo Escena (.json)"</b>.</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer" style="padding: 12px 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 11.5px; color: var(--text-muted); letter-spacing: 0.5px;">
+          Desarrollado por <b style="color: var(--accent-cyan);">Jhan By AudacIA</b>
+        </span>
+        <button id="btn-close-help-footer" class="tool-btn accent-btn" style="padding: 6px 18px;">¡Entendido!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Videos Renderizados (media/exports) -->
+  <div id="modal-exports" class="modal-overlay hidden">
+    <div class="modal-card" style="max-width: 820px; max-height: 85vh;">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="modal-icon" style="display: flex; align-items: center; color: var(--accent-cyan);">
+            <svg class="svg-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/></svg>
+          </span>
+          <div>
+            <h3 style="margin:0; font-size: 16px; color: var(--text-main);">Videos Renderizados</h3>
+            <p style="margin: 3px 0 0 0; font-size: 11px; color: var(--text-muted);">Archivos generados en media/exports/ listos para reproducir o descargar</p>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap: 8px;">
+          <button id="btn-refresh-exports" class="tool-btn" title="Actualizar lista de videos" style="padding: 4px 10px;">
+            <svg class="svg-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+            Actualizar
+          </button>
+          <button id="btn-close-exports" class="modal-close-btn">&times;</button>
+        </div>
+      </div>
+      <div class="modal-body" style="overflow-y: auto; padding: 20px;">
+        <div id="exports-list" class="exports-grid">
+          <!-- Renderizado dinámico desde ui_controller.js -->
+        </div>
+      </div>
+      <div class="modal-footer" style="padding: 14px 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; gap: 16px;">
+        <span id="exports-count-text" style="font-size: 11.5px; color: var(--text-muted); font-weight: 500;">0 videos guardados</span>
+        <button id="btn-close-exports-footer" class="tool-btn accent-btn" style="flex: none; min-width: 90px; justify-content: center; padding: 6px 18px; font-size: 12px;">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pantalla de Apagado del Sistema -->
+  <div id="shutdown-overlay" class="modal-overlay hidden" style="background: rgba(0, 0, 0, 0.94); z-index: 99999; display: flex; align-items: center; justify-content: center;">
+    <div class="modal-card modal-card-sm" style="text-align: center; padding: 32px 24px; border-color: rgba(248, 113, 113, 0.4); box-shadow: 0 0 30px rgba(248, 113, 113, 0.2);">
+      <div style="display: flex; justify-content: center; margin-bottom: 16px; color: #f87171;">
+        <svg class="svg-icon" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
+      </div>
+      <h2 style="margin: 0 0 8px 0; color: #f87171; font-size: 19px;">Projection Mapper Detenido</h2>
+      <p style="font-size: 13px; color: var(--text-muted); line-height: 1.6; margin: 0 0 20px 0;">
+        El servidor local ha sido apagado y el puerto 8085 liberado exitosamente.<br>
+        Ya puedes cerrar esta pestaña del navegador con seguridad.
+      </p>
+      <div style="font-size: 11.5px; color: #64748b; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 12px;">
+        Creado por <b style="color: var(--accent-cyan);">Jhan By AudacIA</b> · ¡Hasta pronto!
+      </div>
+    </div>
+  </div>
+</body>
+</html>

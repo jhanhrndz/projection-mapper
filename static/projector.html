@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Projection Mapper · Salida Proyector</title>
+  <link rel="stylesheet" href="/static/css/projector.css?v=2.7.0">
+</head>
+<body>
+
+  <!-- Contenedor del proyector a pantalla completa -->
+  <div id="projector-container"></div>
+
+  <!-- Scripts -->
+  <script src="/static/js/icons.js?v=2.8.0"></script>
+  <script src="/static/js/sync.js?v=2.8.0"></script>
+  <script src="/static/js/math_warp.js?v=2.8.0"></script>
+  <script src="/static/js/polygon_model.js?v=2.8.0"></script>
+  <script src="/static/js/projector_view.js?v=2.8.0"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const projector = new ProjectorView();
+      console.log('[ProjectionMapper] Ventana de Proyector inicializada con fondo negro.');
+    });
+  </script>
+</body>
+</html>
