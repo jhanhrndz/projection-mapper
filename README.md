@@ -6,8 +6,8 @@ Projection Mapper Studio es un software profesional de **Video Mapping (Mapeo de
 
 ## 📑 Documentación Adicional
 
-* 📘 **[Guía de Usuario](./GUIA_DE_USUARIO.md):** Manual completo paso a paso para aprender a usar el software, configurar proyectores, calibrar figuras, asignar medios y presentar en vivo.
-* 🛠️ **[Documentación Técnica Oficial](./DOCUMENTACION_TECNICA.md):** Arquitectura interna, fundamentos matemáticos de homografía, protocolos de sincronización a 0 ms, motor de renderizado y estructura del código para desarrolladores.
+* 📘 **[Guía de Usuario](./documentation/GUIA_DE_USUARIO.md):** Manual completo paso a paso para aprender a usar el software, configurar proyectores, calibrar figuras, asignar medios y presentar en vivo.
+* 🛠️ **[Documentación Técnica Oficial](./documentation/DOCUMENTACION_TECNICA.md):** Arquitectura interna, fundamentos matemáticos de homografía, protocolos de sincronización a 0 ms, motor de renderizado y estructura del código para desarrolladores.
 
 ---
 
