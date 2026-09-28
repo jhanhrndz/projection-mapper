@@ -1,0 +1,11 @@
+# Ignorar archivos del backend local de Python para que Vercel no intente compilarlos como Serverless Functions
+*.py
+requirements.txt
+INICIAR.bat
+DETENER.bat
+ProjectionMapper-Portable
+.venv
+.venv1
+__pycache__
+scenes/
+media/exports/
