@@ -92,10 +92,10 @@ class EditorCanvas {
   renderGrid() {
     // Dibujar cruz central y bordes del proyector en 1920x1080
     this.gridLayer.innerHTML = `
-      <rect x="0" y="0" width="1920" height="1080" fill="#0b0e14" stroke="#1f293d" stroke-width="2"/>
-      <line x1="960" y1="0" x2="960" y2="1080" stroke="#151c28" stroke-width="1" stroke-dasharray="4 4"/>
-      <line x1="0" y1="540" x2="1920" y2="540" stroke="#151c28" stroke-width="1" stroke-dasharray="4 4"/>
-      <circle cx="960" cy="540" r="6" fill="#1f293d"/>
+      <rect x="0" y="0" width="1920" height="1080" fill="transparent" stroke="#1f293d" stroke-width="2" pointer-events="all"/>
+      <line x1="960" y1="0" x2="960" y2="1080" stroke="#151c28" stroke-width="1" stroke-dasharray="4 4" pointer-events="none"/>
+      <line x1="0" y1="540" x2="1920" y2="540" stroke="#151c28" stroke-width="1" stroke-dasharray="4 4" pointer-events="none"/>
+      <circle cx="960" cy="540" r="6" fill="#1f293d" pointer-events="none"/>
     `;
   }
 
@@ -1287,8 +1287,9 @@ class EditorCanvas {
             : (hasEdgeCurves ? MathWarp.getSampledCurvedPolygon(poly.points, poly.edgeCurves, 24) : poly.points);
 
           const clipPath = MathWarp.getClipPathPolygon(clipPts, 1920, 1080);
-          const xs = pixelPts.map(p => p[0]);
-          const ys = pixelPts.map(p => p[1]);
+          const pixelClipPts = clipPts.map(([nx, ny]) => [nx * 1920, ny * 1080]);
+          const xs = pixelClipPts.map(p => p[0]);
+          const ys = pixelClipPts.map(p => p[1]);
           const minX = Math.min(...xs);
           const maxX = Math.max(...xs);
           const minY = Math.min(...ys);

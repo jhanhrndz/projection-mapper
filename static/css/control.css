@@ -231,10 +231,48 @@ body {
   overflow: hidden;
 }
 
+/* Capa de medios deformados acelerada por hardware */
+.warped-media-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1920px;
+  height: 1080px;
+  pointer-events: none;
+  overflow: visible;
+  z-index: 1;
+  transform-origin: 0 0;
+}
+
+.warped-media-quad {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1000px;
+  height: 1000px;
+  transform-origin: 0 0;
+  pointer-events: none;
+  overflow: hidden;
+  backface-visibility: hidden;
+  will-change: transform;
+}
+
+.warped-media-quad img,
+.warped-media-quad video {
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  display: block;
+}
+
 #editor-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   display: block;
+  z-index: 10;
 }
 
 /* Lista de Capas */
