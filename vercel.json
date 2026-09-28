@@ -1,9 +1,27 @@
 {
-  "cleanUrls": true,
-  "rewrites": [
-    { "source": "/projector", "destination": "/static/projector.html" },
-    { "source": "/", "destination": "/static/index.html" },
-    { "source": "/static/(.*)", "destination": "/static/$1" },
-    { "source": "/media/(.*)", "destination": "/media/$1" }
+  "version": 2,
+  "builds": [
+    {
+      "src": "**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/projector",
+      "dest": "/static/projector.html"
+    },
+    {
+      "src": "/static/(.*)",
+      "dest": "/static/$1"
+    },
+    {
+      "src": "/media/(.*)",
+      "dest": "/media/$1"
+    },
+    {
+      "src": "/",
+      "dest": "/static/index.html"
+    }
   ]
 }
