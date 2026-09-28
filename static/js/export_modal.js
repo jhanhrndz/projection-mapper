@@ -78,6 +78,9 @@ class ExportModal {
             </div>
           </div>
 
+          <!-- Panel Informativo Demo Web -->
+          <div id="export-demo-panel" class="export-demo-panel" style="display: none;"></div>
+
           <!-- Panel de Progreso del Renderizado -->
           <div id="export-progress-panel" class="export-progress-panel" style="display: none;">
             <div class="export-progress-header">
@@ -167,8 +170,55 @@ class ExportModal {
     this.modal.style.display = 'flex';
     document.body.classList.add('modal-open');
 
-    // Revisar si ya hay un render en curso en el servidor
-    this.checkCurrentServerStatus();
+    const isDemo = window.AppEnv ? window.AppEnv.isDemoMode() : (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1');
+
+    if (isDemo) {
+      const encBadge = document.getElementById('export-encoder-badge');
+      if (encBadge) encBadge.style.display = 'none';
+      const configGrid = document.querySelector('.export-config-grid');
+      if (configGrid) configGrid.style.display = 'none';
+      const startBtn = document.getElementById('btn-start-export');
+      if (startBtn) startBtn.style.display = 'none';
+
+      const demoPanel = document.getElementById('export-demo-panel');
+      if (demoPanel) {
+        demoPanel.style.display = 'block';
+        demoPanel.innerHTML = `
+          <div style="background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.25); border-radius: 8px; padding: 20px; text-align: center; margin-bottom: 12px;">
+            <div style="display: flex; justify-content: center; margin-bottom: 12px; color: var(--accent-cyan);">
+              ${Icons.get('cpu', { size: 36 })}
+            </div>
+            <h4 style="margin: 0 0 8px 0; color: var(--text-main); font-size: 15px;">Función Exclusiva de la Versión Desktop</h4>
+            <p style="margin: 0 auto 14px auto; max-width: 480px; font-size: 12.5px; color: var(--text-muted); line-height: 1.5;">
+              El renderizado de video pre-mapeado acelerado por hardware (GPU + FFmpeg) requiere el motor nativo de escritorio ejecutado con <code>INICIAR.bat</code>.
+            </p>
+            <div style="background: rgba(0,0,0,0.3); border-radius: 6px; padding: 12px 16px; font-size: 12px; color: var(--text-main); text-align: left; margin-bottom: 16px; line-height: 1.6;">
+              <b style="color: var(--accent-cyan); display: block; margin-bottom: 6px;">En esta Demo Web interactiva puedes:</b>
+              • Diseñar y calibrar geometrías y curvas Bézier libremente.<br>
+              • Cargar y proyectar tus propios videos e imágenes a 0 ms de latencia.<br>
+              • Abrir la ventana de proyector a pantalla completa.<br>
+              • Guardar y descargar tus escenas y paquetes completos <b>.pmap</b>.
+            </div>
+            <a href="https://github.com/jhanhrndz/projection-mapper" target="_blank" rel="noopener noreferrer" class="tool-btn accent-btn" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; padding: 8px 18px; font-size: 12px; font-weight: 600; width: auto; margin: 0 auto;">
+              ${Icons.get('download', { size: 14 })} Descargar Versión Desktop en GitHub
+            </a>
+          </div>
+        `;
+      }
+      return;
+    } else {
+      const encBadge = document.getElementById('export-encoder-badge');
+      if (encBadge) encBadge.style.display = 'inline-flex';
+      const configGrid = document.querySelector('.export-config-grid');
+      if (configGrid) configGrid.style.display = 'grid';
+      const startBtn = document.getElementById('btn-start-export');
+      if (startBtn) startBtn.style.display = 'inline-flex';
+      const demoPanel = document.getElementById('export-demo-panel');
+      if (demoPanel) demoPanel.style.display = 'none';
+
+      // Revisar si ya hay un render en curso en el servidor
+      this.checkCurrentServerStatus();
+    }
   }
 
   close() {
@@ -421,6 +471,7 @@ class ExportModal {
   }
 
   async checkCurrentServerStatus() {
+    if (window.AppEnv && window.AppEnv.isDemoMode()) return;
     try {
       const res = await fetch('/api/export/status');
       if (!res.ok) return;

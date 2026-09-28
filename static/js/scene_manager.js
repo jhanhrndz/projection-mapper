@@ -215,15 +215,66 @@ class SceneManager {
     this.saveAsModal.classList.add('hidden');
   }
 
+  getStoredScenesMap() {
+    try {
+      const raw = localStorage.getItem('projection_mapper_saved_scenes');
+      return raw ? JSON.parse(raw) : {};
+    } catch {
+      return {};
+    }
+  }
+
+  setStoredScenesMap(map) {
+    try {
+      localStorage.setItem('projection_mapper_saved_scenes', JSON.stringify(map));
+    } catch (e) {
+      console.warn('[SceneManager] Error guardando en localStorage:', e);
+    }
+  }
+
+  getDemoScenesList() {
+    const map = this.getStoredScenesMap();
+    const list = [];
+    for (const [name, data] of Object.entries(map)) {
+      const polys = data.polygons || [];
+      list.push({
+        name,
+        filename: `${name}.json`,
+        modified: data.modified || Date.now() / 1000,
+        surface_count: polys.length,
+        quad_count: polys.filter(p => p.type === 'quad').length,
+        size_bytes: JSON.stringify(data).length,
+        size_formatted: `${(JSON.stringify(data).length / 1024).toFixed(1)} KB`,
+        preview_polygons: polys.map(p => ({
+          points: p.points || [],
+          type: p.type || 'quad',
+          is_circular: p.is_circular || false,
+          color: p.color || '#00f0ff'
+        }))
+      });
+    }
+    return list;
+  }
+
   async fetchScenes() {
+    if (window.AppEnv && window.AppEnv.isDemoMode()) {
+      this.scenesList = this.getDemoScenesList();
+      this.renderScenesGrid();
+      return;
+    }
+
     try {
       const res = await fetch('/api/scenes');
       if (res.ok) {
         this.scenesList = await res.json();
         this.renderScenesGrid();
+      } else {
+        this.scenesList = this.getDemoScenesList();
+        this.renderScenesGrid();
       }
     } catch (e) {
-      console.error('[SceneManager] Error cargando lista de escenas:', e);
+      this.scenesList = this.getDemoScenesList();
+      this.renderScenesGrid();
     }
   }
 
@@ -339,6 +390,21 @@ class SceneManager {
   }
 
   async loadScene(name) {
+    if (window.AppEnv && window.AppEnv.isDemoMode()) {
+      const map = this.getStoredScenesMap();
+      const data = map[name];
+      if (!data) {
+        alert('No se encontró la escena en el almacenamiento del navegador.');
+        return;
+      }
+      this.scene.fromJSON(data);
+      this.sync.broadcastFullState(this.scene.toJSON());
+      this.ui.refreshAll();
+      this.closeModal();
+      this.showToast(`Escena "${name}" cargada con éxito`, 'success');
+      return;
+    }
+
     try {
       const res = await fetch(`/api/scenes/${encodeURIComponent(name)}`);
       if (!res.ok) throw new Error('No se pudo cargar la escena');
@@ -350,6 +416,15 @@ class SceneManager {
       this.closeModal();
       this.showToast(`Escena "${name}" cargada con éxito`, 'success');
     } catch (e) {
+      const map = this.getStoredScenesMap();
+      if (map[name]) {
+        this.scene.fromJSON(map[name]);
+        this.sync.broadcastFullState(this.scene.toJSON());
+        this.ui.refreshAll();
+        this.closeModal();
+        this.showToast(`Escena "${name}" cargada localmente`, 'success');
+        return;
+      }
       alert('Error cargando escena: ' + e.message);
     }
   }
@@ -357,6 +432,16 @@ class SceneManager {
   async quickSave() {
     if (!this.scene.name || this.scene.name === 'Nueva Escena' || this.scene.name === 'Nueva_Escena') {
       this.openSaveAs();
+      return;
+    }
+
+    if (window.AppEnv && window.AppEnv.isDemoMode()) {
+      const map = this.getStoredScenesMap();
+      const sceneData = this.scene.toJSON();
+      sceneData.modified = Date.now() / 1000;
+      map[this.scene.name] = sceneData;
+      this.setStoredScenesMap(map);
+      this.showToast(`Escena "${this.scene.name}" guardada en el navegador`, 'success');
       return;
     }
 
@@ -373,8 +458,12 @@ class SceneManager {
         throw new Error(data.error || 'Error desconocido');
       }
     } catch (e) {
-      console.error(e);
-      this.showToast('Error al guardar: ' + e.message, 'error');
+      const map = this.getStoredScenesMap();
+      const sceneData = this.scene.toJSON();
+      sceneData.modified = Date.now() / 1000;
+      map[this.scene.name] = sceneData;
+      this.setStoredScenesMap(map);
+      this.showToast(`Escena "${this.scene.name}" guardada localmente`, 'success');
     }
   }
 
@@ -383,6 +472,22 @@ class SceneManager {
     if (!rawName) return;
 
     this.scene.name = rawName;
+
+    if (window.AppEnv && window.AppEnv.isDemoMode()) {
+      const map = this.getStoredScenesMap();
+      const sceneData = this.scene.toJSON();
+      sceneData.modified = Date.now() / 1000;
+      map[rawName] = sceneData;
+      this.setStoredScenesMap(map);
+      this.closeSaveAs();
+      if (!this.overlay.classList.contains('hidden')) {
+        await this.fetchScenes();
+      }
+      this.showToast(`Escena guardada como "${rawName}"`, 'success');
+      this.ui.refreshAll();
+      return;
+    }
+
     try {
       const res = await fetch('/api/scenes', {
         method: 'POST',
@@ -401,11 +506,40 @@ class SceneManager {
         throw new Error(data.error);
       }
     } catch (e) {
-      alert('Error guardando: ' + e.message);
+      const map = this.getStoredScenesMap();
+      const sceneData = this.scene.toJSON();
+      sceneData.modified = Date.now() / 1000;
+      map[rawName] = sceneData;
+      this.setStoredScenesMap(map);
+      this.closeSaveAs();
+      if (!this.overlay.classList.contains('hidden')) {
+        await this.fetchScenes();
+      }
+      this.showToast(`Escena guardada como "${rawName}" (local)`, 'success');
+      this.ui.refreshAll();
     }
   }
 
   async duplicateScene(name) {
+    if (window.AppEnv && window.AppEnv.isDemoMode()) {
+      const map = this.getStoredScenesMap();
+      const base = map[name] || this.scene.toJSON();
+      let newName = `${name}_copia`;
+      let counter = 2;
+      while (map[newName]) {
+        newName = `${name}_copia_${counter}`;
+        counter++;
+      }
+      const clone = JSON.parse(JSON.stringify(base));
+      clone.name = newName;
+      clone.modified = Date.now() / 1000;
+      map[newName] = clone;
+      this.setStoredScenesMap(map);
+      this.showToast(`Copia creada: "${newName}"`, 'info');
+      await this.fetchScenes();
+      return;
+    }
+
     try {
       const res = await fetch(`/api/scenes/${encodeURIComponent(name)}/duplicate`, { method: 'POST' });
       const data = await res.json();
@@ -421,6 +555,15 @@ class SceneManager {
   async deleteScene(name) {
     if (!confirm(`¿Estás seguro de que deseas eliminar permanentemente la escena "${name}"?`)) return;
 
+    if (window.AppEnv && window.AppEnv.isDemoMode()) {
+      const map = this.getStoredScenesMap();
+      delete map[name];
+      this.setStoredScenesMap(map);
+      this.showToast(`Escena "${name}" eliminada`, 'info');
+      await this.fetchScenes();
+      return;
+    }
+
     try {
       const res = await fetch(`/api/scenes/${encodeURIComponent(name)}`, { method: 'DELETE' });
       const data = await res.json();
@@ -434,6 +577,12 @@ class SceneManager {
   }
 
   async exportPmap(name) {
+    if (window.AppEnv && window.AppEnv.isDemoMode()) {
+      this.exportScene(name);
+      this.showToast('En Demo Web se descargó la escena como .json', 'info');
+      return;
+    }
+
     try {
       this.showToast(`Generando paquete .pmap para "${name}"...`, 'info');
       const res = await fetch(`/api/project/export?name=${encodeURIComponent(name)}`);
@@ -455,6 +604,20 @@ class SceneManager {
   }
 
   async exportScene(name) {
+    if (window.AppEnv && window.AppEnv.isDemoMode()) {
+      const map = this.getStoredScenesMap();
+      const data = map[name] || this.scene.toJSON();
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${name}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      this.showToast(`Archivo "${name}.json" descargado`, 'info');
+      return;
+    }
+
     try {
       const res = await fetch(`/api/scenes/${encodeURIComponent(name)}`);
       const data = await res.json();
@@ -474,6 +637,29 @@ class SceneManager {
   async importProject(file) {
     try {
       this.showToast(`Importando "${file.name}"...`, 'info');
+
+      if (file.name.toLowerCase().endsWith('.json')) {
+        const text = await file.text();
+        const json = JSON.parse(text);
+        this.scene.fromJSON(json);
+        this.sync.broadcastFullState(this.scene.toJSON());
+        this.ui.refreshAll();
+        if (window.AppEnv && window.AppEnv.isDemoMode()) {
+          const map = this.getStoredScenesMap();
+          map[this.scene.name] = this.scene.toJSON();
+          this.setStoredScenesMap(map);
+        }
+        await this.fetchScenes();
+        this.closeModal();
+        this.showToast(`Escena "${this.scene.name || file.name}" importada exitosamente`, 'success');
+        return;
+      }
+
+      if (window.AppEnv && window.AppEnv.isDemoMode()) {
+        alert('En la versión Demo Web se importan archivos .json de escena. Los paquetes .pmap con extracción automática se procesan en la versión Desktop.');
+        return;
+      }
+
       const res = await fetch('/api/project/import', {
         method: 'POST',
         headers: {

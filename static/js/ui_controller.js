@@ -92,6 +92,26 @@ class UIController {
 
     // Overlay de apagado del sistema
     this.shutdownOverlay = document.getElementById('shutdown-overlay');
+
+    // Insignia de entorno (Demo Web vs Local)
+    this.renderEnvBadge();
+  }
+
+  renderEnvBadge() {
+    const isDemo = window.AppEnv ? window.AppEnv.isDemoMode() : (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1');
+    const badgeEl = document.getElementById('env-badge');
+    if (!badgeEl) return;
+    if (isDemo) {
+      badgeEl.style.display = 'inline-flex';
+      badgeEl.innerHTML = `
+        <span style="display:inline-flex; align-items:center; gap:5px; background:rgba(0, 240, 255, 0.12); border:1px solid rgba(0, 240, 255, 0.35); color:var(--accent-cyan); font-size:10px; font-weight:700; padding:2px 8px; border-radius:12px; letter-spacing:0.5px; text-transform:uppercase; margin-left:6px; cursor:help;" title="Versión Demo Web Interactiva · Mapeo, curvas Bézier y doble ventana a 0 ms activos">
+          <span style="display:inline-block; width:6px; height:6px; background:var(--accent-cyan); border-radius:50%; box-shadow:0 0 6px var(--accent-cyan);"></span>
+          Demo Web
+        </span>
+      `;
+    } else {
+      badgeEl.style.display = 'none';
+    }
   }
 
   closeAllDropdowns() {
@@ -1257,6 +1277,12 @@ class UIController {
   }
 
   async exportCurrentPmap() {
+    if (window.AppEnv && window.AppEnv.isDemoMode()) {
+      this.exportCurrentJson();
+      this.showToast('En Demo Web se descargó la escena como .json', 'info');
+      return;
+    }
+
     try {
       const sceneData = this.scene.toJSON();
       const sceneName = (this.scene.name || 'proyecto_mapeo').trim();
@@ -1308,6 +1334,21 @@ class UIController {
     try {
       this.showToast(`Importando "${file.name}"...`, 'info');
 
+      if (file.name.toLowerCase().endsWith('.json')) {
+        const text = await file.text();
+        const json = JSON.parse(text);
+        this.scene.fromJSON(json);
+        this.sync.broadcastFullState(this.scene.toJSON());
+        this.refreshAll();
+        this.showToast(`Escena "${this.scene.name || file.name}" importada con éxito`, 'success');
+        return;
+      }
+
+      if (window.AppEnv && window.AppEnv.isDemoMode()) {
+        alert('En la versión Demo Web se importan archivos .json de escena. Los paquetes .pmap con extracción automática se procesan en la versión de escritorio.');
+        return;
+      }
+
       const res = await fetch('/api/project/import', {
         method: 'POST',
         headers: {
@@ -1349,6 +1390,21 @@ class UIController {
 
   async fetchExports() {
     if (!this.exportsList) return;
+
+    if (window.AppEnv && window.AppEnv.isDemoMode()) {
+      if (this.exportsCountText) this.exportsCountText.textContent = '0 videos (Modo Demo Web)';
+      this.exportsList.innerHTML = `
+        <div style="grid-column: 1/-1; text-align: center; padding: 36px 20px; color: var(--text-muted);">
+          <div style="display: flex; justify-content: center; margin-bottom: 12px; color: var(--accent-cyan);">${Icons.get('film', { size: 36 })}</div>
+          <h4 style="margin: 0 0 8px 0; color: var(--text-main); font-size: 15px;">Galería de Videos en Versión Desktop</h4>
+          <p style="margin: 0 auto 14px auto; max-width: 440px; font-size: 12px; line-height: 1.5;">
+            En la versión <b>Demo Web</b> los renders acelerados por GPU (.mp4) no se almacenan en el servidor en la nube. Los videos exportados se generan y guardan en el disco local de tu computadora al usar la versión de escritorio nativa.
+          </p>
+        </div>
+      `;
+      return;
+    }
+
     this.exportsList.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:20px; color:#94a3b8;">Cargando videos...</div>';
     try {
       const res = await fetch('/api/exports');
@@ -1421,6 +1477,11 @@ class UIController {
   }
 
   async shutdownSystem() {
+    if (window.AppEnv && window.AppEnv.isDemoMode()) {
+      this.showToast('La opción de apagar servidor solo aplica al ejecutar el entorno local con INICIAR.bat.', 'info');
+      return;
+    }
+
     if (!confirm('¿Deseas salir y detener el servidor de Projection Mapper?')) return;
     try {
       if (this.shutdownOverlay) {

@@ -1,0 +1,9 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/projector", "destination": "/static/projector.html" },
+    { "source": "/", "destination": "/static/index.html" },
+    { "source": "/static/(.*)", "destination": "/static/$1" },
+    { "source": "/media/(.*)", "destination": "/media/$1" }
+  ]
+}

@@ -17,6 +17,7 @@
         <span class="scene-label">Escena:</span>
         <input type="text" id="top-scene-name-input" class="scene-name-input" value="Mi_Escena_1" spellcheck="false" autocomplete="off" />
       </div>
+      <span id="env-badge" class="env-badge" style="display: none;"></span>
     </div>
 
     <div class="quick-actions">
@@ -229,16 +230,22 @@
   </div>
 
   <!-- Scripts de la Aplicación -->
-  <script src="/static/js/icons.js?v=2.8.4"></script>
-  <script src="/static/js/sync.js?v=2.8.4"></script>
-  <script src="/static/js/math_warp.js?v=2.8.4"></script>
-  <script src="/static/js/polygon_model.js?v=2.8.4"></script>
-  <script src="/static/js/editor_canvas.js?v=2.8.4"></script>
-  <script src="/static/js/ui_controller.js?v=2.8.4"></script>
-  <script src="/static/js/scene_manager.js?v=2.8.4"></script>
-  <script src="/static/js/export_modal.js?v=2.8.4"></script>
+  <script src="/static/js/app_env.js?v=2.8.5"></script>
+  <script src="/static/js/icons.js?v=2.8.5"></script>
+  <script src="/static/js/sync.js?v=2.8.5"></script>
+  <script src="/static/js/math_warp.js?v=2.8.5"></script>
+  <script src="/static/js/polygon_model.js?v=2.8.5"></script>
+  <script src="/static/js/editor_canvas.js?v=2.8.5"></script>
+  <script src="/static/js/ui_controller.js?v=2.8.5"></script>
+  <script src="/static/js/scene_manager.js?v=2.8.5"></script>
+  <script src="/static/js/export_modal.js?v=2.8.5"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Inicializar detección de entorno (Desktop Local vs Demo Web)
+      if (window.AppEnv) {
+        await window.AppEnv.init();
+      }
+
       const sync = new MappingSync('control');
       const scene = new SceneModel('Mi_Escena_1');
       
@@ -261,7 +268,7 @@
       // Sincronizar estado inicial
       sync.broadcastFullState(scene.toJSON());
 
-      console.log('[ProjectionMapper] Control Window, SceneManager y ExportModal inicializados.');
+      console.log('[ProjectionMapper] Control Window inicializada. Modo:', window.AppEnv && window.AppEnv.isDemoMode() ? 'Demo Web' : 'Desktop Local');
     });
   </script>
   <!-- Modal de Ayuda y Atajos de Teclado -->
